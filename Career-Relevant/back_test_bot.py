@@ -32,6 +32,30 @@ class back_test_bot(object):
         self.range2 = range2
         self.strategy = strategy
 
+        if self.strategy == 0:
+            # SMA trading strategy
+            print("---user choice : moving ave strategy, shorter moving range " + str(range1) + " longer moving range: " + str(range2))
+            self.data["range1"] = self.data['Adj Close'].rolling(range1).mean()
+            self.data["range2"] = self.data['Adj Close'].rolling(range2).mean()
+
+            # can change the last number to -1 for short position
+            self.data['Position'] = np.where(self.data['range1'] > self.data['range2'], 1, 0)
+            print("---portfolio position established ...")
+
+            self.data['Returns'] = np.log(self.data['Adj Close'] / self.data['Adj Close'].shift(1))
+            print("---market returns calculated ...")
+            self.data['Strategy'] = self.data['Position'].shift(1) * self.data['Returns']
+            print("---strategy returns calculate ...")
+
+            self.data.dropna(inplace=True)
+
+            self.sum = np.exp(self.data[['Returns', 'Strategy']].sum())
+
+            # using 252 trading days
+            self.std = self.data[['Returns', 'Strategy']].std() * 252 ** 0.5
+
+            print("---Congrats!!! all result generated, find daily data in results, find stats data in sum and std")
+
         if self.strategy == 1:
             # EMA trading strategy
             print("---user choice : moving EMA strategy, shorter moving range " + str(range1) + " longer moving range: " + str(range2))
@@ -54,7 +78,7 @@ class back_test_bot(object):
 
             print("---portfolio position established ...")
 
-            self.data['Returns'] = self.data['Adj Close'] - self.data['Adj Close'].shift(1)
+            self.data['Returns'] = np.log(self.data['Adj Close'] / self.data['Adj Close'].shift(1))
             print("---market returns calculated ...")
             self.data['Strategy'] = self.data['Position'].shift(1) * self.data['Returns']
             print("---strategy returns calculate ...")
