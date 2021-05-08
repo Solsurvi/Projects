@@ -49,7 +49,7 @@ class back_test_bot(object):
 
             self.data.dropna(inplace=True)
 
-            self.sum = np.exp(self.data[['Returns', 'Strategy']].sum())
+            self.sum = self.data[['Returns', 'Strategy']].cumsum().apply(np.exp)
 
             # using 252 trading days
             self.std = self.data[['Returns', 'Strategy']].std() * 252 ** 0.5
@@ -85,38 +85,12 @@ class back_test_bot(object):
 
             self.data.dropna(inplace=True)
 
-            self.sum = np.exp(self.data[['Returns', 'Strategy']].sum())
+            self.sum = self.data[['Returns', 'Strategy']].cumsum().apply(np.exp)
 
             # using 252 trading days
             self.std = self.data[['Returns', 'Strategy']].std() * 252 ** 0.5
 
             print("---Congrats!!! all result generated, find daily data in results, find stats data in sum and std")
-
-
-        if self.strategy == 0:
-            # SMA trading strategy
-            print("---user choice : moving ave strategy, shorter moving range " + str(range1) + " longer moving range: " + str(range2))
-            self.data["range1"] = self.data['Adj Close'].rolling(range1).mean()
-            self.data["range2"] = self.data['Adj Close'].rolling(range2).mean()
-
-            # can change the last number to -1 for short position
-            self.data['Position'] = np.where(self.data['range1'] > self.data['range2'], 1, 0)
-            print("---portfolio position established ...")
-
-            self.data['Returns'] = self.data['Adj Close'] - self.data['Adj Close'].shift(1)
-            print("---market returns calculated ...")
-            self.data['Strategy'] = self.data['Position'].shift(1) * self.data['Returns']
-            print("---strategy returns calculate ...")
-
-            self.data.dropna(inplace=True)
-
-            self.sum = np.exp(self.data[['Returns', 'Strategy']].sum())
-
-            # using 252 trading days
-            self.std = self.data[['Returns', 'Strategy']].std() * 252 ** 0.5
-
-            print("---Congrats!!! all result generated, find daily data in results, find stats data in sum and std")
-
 
 
     def plot1(self):
@@ -155,12 +129,12 @@ class back_test_bot(object):
     def summary(self, year = 4):
         if self.strategy == 0:
             print("---- SMA: Sums up the returns for the strategy and the market")
-            print(self.sum/year)
+            print((self.sum.tail(1)-1)/year)
             print("---The annualized volatility for the strategy and the market")
             print(self.std)
         if self.strategy == 1:
             print("---- EMA: Sums up the returns for the strategy and the market")
-            print(self.sum/year)
+            print((self.sum.tail(1)-1)/year)
             print("---The annualized volatility for the strategy and the market")
             print(self.std)
 
