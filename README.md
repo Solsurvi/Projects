@@ -1,7 +1,7 @@
 # Projects 
 Name: Ming(Edward) Nie   He/His/Him  
 
-Data Science Student with 6+ years of coding experience and solid business background.
+A Data Science Student with 6+ years of coding experience and solid business background.
 I write readable and maintainable code and explains product and design in ways every business person can understand.
 
 Columbia University QMSS (Data Science Focus) 2022
